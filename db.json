@@ -1,3 +1,14 @@
 {
-  "users": []
+  "users": [
+    {
+      "id": 1,
+      "name": "Beorn Ursus",
+      "age": 46
+    },
+    {
+      "name": "Gandalf the White",
+      "age": 937,
+      "id": 2
+    }
+  ]
 }

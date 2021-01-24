@@ -1,18 +1,9 @@
 import { User } from './models/User';
-
-const user = new User({ name: 'Sam', age: 26 });
+const user = new User({ id: 2, name: 'Gandalf the White' });
+user.save();
 
 user.on('change', () => {
-  console.log('foo');
-});
-user.on('change', () => {
-  console.log('bar');
-});
-user.on('change', () => {
-  console.log('baz');
-});
-user.on('allTheThings', () => {
-  console.log('fooBarBaz');
+  console.log('-------------> USER CHANGED', user.get('name'));
 });
 
-user.trigger('nope');
+user.fetch();

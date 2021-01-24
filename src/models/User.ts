@@ -1,42 +1,59 @@
-type UserProps = {
-  name?: string;
-  age?: number;
-};
-type Callback = () => void;
+import { Eventing } from './Eventing';
+import { UserProps } from '../interfaces/UserProps';
+import { Sync } from './Sync';
+import { Attributes } from './Attributes';
+import { AxiosPromise, AxiosResponse } from 'axios';
 
+const baseURL = 'http://localhost:3000/users';
 export class User {
-  public events: { [key: string]: Callback[] } = {};
+  public attributes: Attributes<UserProps>;
+  public events: Eventing = new Eventing();
+  public sync: Sync<UserProps> = new Sync<UserProps>(baseURL);
 
-  constructor(private data: UserProps) {}
+  constructor(attrs: UserProps) {
+    this.attributes = new Attributes<UserProps>(attrs);
+  }
 
-  get(propName: string): string | number {
-    return this.data[propName];
+  /**
+   * return reference of the on() function from the eventing class.
+   */
+  get on() {
+    return this.events.on;
+  }
+
+  get trigger() {
+    return this.events.trigger;
+  }
+
+  get get() {
+    return this.attributes.get;
   }
 
   set(update: UserProps): void {
-    Object.assign(this.data, update);
+    this.attributes.set(update);
+    this.events.trigger('change');
   }
 
-  on(eventName: string, callback: Callback): void {
-    // make handlers an array, empty or of callbacks
-    const handlers = this.events[eventName] || [];
-    // add callback the array
-    handlers.push(callback);
-    // assign array to events.eventName
-    this.events[eventName] = handlers;
-  }
+  fetch(): void {
+    const id = this.get('id');
 
-  trigger(eventName: string): void {
-    const handlers = this.events[eventName];
-
-    // if undefined or empty
-    if (!handlers || handlers.length === 0) {
-      return;
+    if (typeof id !== 'number') {
+      throw new Error('Cannot fetch a User without `id`.');
     }
 
-    // call all the arrayed callbacks for an eventType
-    handlers.forEach((callback) => {
-      callback();
+    this.sync.fetch(id).then((res: AxiosResponse): void => {
+      this.set(res.data);
     });
+  }
+
+  save(): void {
+    this.sync
+      .save(this.attributes.getAll())
+      .then((res: AxiosResponse) => {
+        this.trigger('save');
+      })
+      .catch(() => {
+        this.trigger('error');
+      });
   }
 }
