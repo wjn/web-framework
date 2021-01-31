@@ -1,14 +1,12 @@
 import axios, { AxiosPromise } from 'axios';
+import { HasId } from '../interfaces';
 
-interface HasId {
-  id?: number;
-}
-
-export class Sync<T extends HasId> {
+export class ApiSync<T extends HasId> {
   constructor(public baseURL: string) {
     // remove trailing slash from baseUrl
     this.baseURL = baseURL.replace(/\/$/, '');
   }
+
   fetch(id: number): AxiosPromise {
     return axios.get(`${this.baseURL}/${id}`);
   }
@@ -16,13 +14,9 @@ export class Sync<T extends HasId> {
   save(data: T): AxiosPromise {
     const { id } = data;
 
-    if (id) {
-      const foo = id;
-    } else {
-      const bar = id;
-    }
     // type guard for id : number | undefined
-    if (!id) {
+    // remember that id === 0 would return falsey here.
+    if (!id && id !== 0) {
       return axios.post(`${this.baseURL}`, data);
     } else {
       // put() would delete properties not passed in,
