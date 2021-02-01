@@ -9,6 +9,16 @@
       "name": "Gandalf the White",
       "age": 942,
       "id": 2
+    },
+    {
+      "name": "Sam",
+      "age": 327,
+      "id": 3
+    },
+    {
+      "name": "Frodo",
+      "age": 76,
+      "id": 4
     }
   ]
 }
