@@ -1,7 +1,8 @@
-import { View, UserForm, UserShow } from './';
+import { View } from './View';
+import { UserForm } from './UserForm';
+import { UserShow } from './UserShow';
 import { User } from '../models';
 import { UserProps } from '../interfaces';
-
 export class UserEdit extends View<User, UserProps> {
   regionsMap(): { [key: string]: string } {
     return {
@@ -11,12 +12,8 @@ export class UserEdit extends View<User, UserProps> {
   }
 
   onRender(): void {
-    if (this.regions.userShow) {
-      new UserShow(this.regions.userShow, this.model).render();
-    }
-    if (this.regions.userForm) {
-      new UserForm(this.regions.userForm, this.model).render();
-    }
+    new UserShow(this.regions.userShow, this.model).render();
+    new UserForm(this.regions.userForm, this.model).render();
   }
 
   template(): string {
